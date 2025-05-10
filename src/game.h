@@ -6,7 +6,7 @@
 #include "controller.h"
 #include "renderer.h"
 #include "snake.h"
-#include "score.h"
+
 
 class Game {
  public:
