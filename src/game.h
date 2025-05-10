@@ -6,6 +6,7 @@
 #include "controller.h"
 #include "renderer.h"
 #include "snake.h"
+#include "score.h"
 
 class Game {
  public:
@@ -14,10 +15,14 @@ class Game {
            std::size_t target_frame_duration);
   int GetScore() const;
   int GetSize() const;
+  // adding pause feature
+  void togglePause();
 
  private:
   Snake snake;
+  Score score;
   SDL_Point food;
+  bool is_paused {false};
 
   std::random_device dev;
   std::mt19937 engine;
