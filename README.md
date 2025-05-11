@@ -80,17 +80,16 @@ If the snake collides, the game is over, and the player's score is displayed.
     ```
 
 ---
+## 🔄 Concurrency (✔ Meets at least 2)
 
-### 🔄 Concurrency (✔ Meets at least 2)
+✅ **Uses threads / async tasks**  
+The function `Game::BonusFoodTimer()` runs in a separate thread and manages the visibility of bonus food over time using `std::chrono` and conditional waiting.
 
-- **✅ Uses threads / async tasks**
-  - Game logic uses `std::async` to manage pause functionality.
+✅ **Mutex or lock used**  
+`std::mutex bonus_mutex` is used along with `std::unique_lock` to synchronize access to shared state like `is_bonus_food_active`. This ensures that the timer loop can safely check and update the state.
 
-- **✅ Promise and future are used**
-  - `promise_pause` and `future_pause` enable async communication between threads.
-
-- **✅ Mutex or lock used**
-  - `pause_mutex` used to protect `is_paused` variable across threads.
+✅ **Condition variable used**  
+A `std::condition_variable condition_var` is used to put the bonus timer thread to sleep efficiently and avoid busy-waiting. It waits in intervals (`wait_for`) and re-checks the condition until the timer expires.
 
 ---
 
