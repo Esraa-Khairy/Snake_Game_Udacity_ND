@@ -9,25 +9,90 @@ If the snake collides, the game is over, and the player's score is displayed.
 ---
 ### ✅ Feature Coverage Summary
 
-**Pause functionality**  
-### ✅ Feature Coverage Summary
+## ✅ Rubric Coverage Summary
 
-**Pause functionality**  
-Covered in:
-- `controller.cpp` – game pause is handled using `switch-case` statements that check when the 'P' key is pressed (Line 39).
-- `game.cpp` – game pause is managed using `if` statements that check the paused state and the 'P' key input in the game loop. The game updates and renders only when not paused. (`Lines 31`)
-- `game.h` – member variables like `is_paused`, `pause_mutex`, `promise_pause` , `future_pause`   and functions like `togglePause()` , `isPaused ()` and `std::move` are used in pause behavior. (`Lines 19-31`)
+### 🔁 Loops, Functions, I/O (✔ Meets at least 2)
 
-**High score tracking**  
-Covered in:
-- `game.cpp` – functions `loadHighScore()` and `saveHighScore()` handle reading/writing `high_score.txt` for persistent score tracking. (`Lines 100-105`)(`Lines 129-154`)
-- `game.h` – member variable `high_score` stores and updates the highest score internally. (`Line 42-48`)
+- **✅ Project demonstrates C++ functions and control structures**
+  - `game.cpp`: Uses `switch`, `if`, and loops for game logic.  
+    Example: Lines 43–49 handle Game Over logic.
+  - `controller.cpp`: `switch-case` manages key inputs.  
+    Example: Line 39 implements pause functionality.
 
-**Game over screen**  
-Addressed here:
-- `game.cpp`, `renderer.cpp`, `snake.cpp` – game over logic is encapsulated in the `Game` class and related modules.
-- `game.cpp` – `if` and `switch` statements manage the game over state and related events. (`Lines 43-49`)
-- `renderer.cpp` – game over screen is rendered with a semi-transparent red overlay when the game ends. (`Line 75-87`)
+- **✅ Code is organized into functions**
+  - Modular design includes:
+    - `Game::Run`
+    - `Game::LoadHighScore`
+    - `Renderer::RenderGameOverScreen`
+
+- **✅ Reads/Writes to a file**
+  - `game.cpp`:
+    - `loadHighScore()` and `saveHighScore()` handle score persistence using `high_score.txt`.
+    - Reading: Lines 100–105  
+    - Writing: Lines 129–154
+
+- **✅ Accepts user input and processes it**
+  - `controller.cpp`: Handles input for movement, pause (`P`), and exit (`ESC`).  
+    Example: Line 39 manages user key handling.
+
+---
+
+### 🧱 Object-Oriented Programming (✔ Meets at least 3)
+
+- **✅ Classes with access specifiers**
+  - `game.h`, `snake.h`, `renderer.h`: Use `public`, `private`, and `protected` to enforce encapsulation.
+
+- **✅ Member data is hidden and accessed via methods**
+  - Example: `Game::isPaused()` provides controlled access to `is_paused`.
+
+- **✅ Class constructors use member initializer lists**
+  - `snake.cpp`:
+    ```cpp
+    Snake::Snake(float x, float y) : head_x(x), head_y(y) { ... }
+    ```
+
+- **⚠️ Overloaded function example**
+  - Currently **not implemented**. Optional to add for additional rubric credit.
+
+- **✅ Classes abstract implementation details**
+  - Responsibilities:
+    - `Game`: Game logic
+    - `Renderer`: Graphics
+    - `Controller`: User input
+
+---
+
+### 💾 Memory Management (✔ Meets at least 3)
+
+- **✅ Pass-by-reference used in functions**
+  - Example:
+    ```cpp
+    void Game::Run(Snake &snake, Renderer &renderer, Controller &controller);
+    ```
+
+- **✅ Uses RAII (Resource Acquisition Is Initialization)**
+  - `std::ifstream` and `std::ofstream` used in `loadHighScore()` and `saveHighScore()` automatically release resources.
+
+- **✅ Move semantics used**
+  - Example:
+    ```cpp
+    togglePause() uses std::move(promise_pause);
+    ```
+
+---
+
+### 🔄 Concurrency (✔ Meets at least 2)
+
+- **✅ Uses threads / async tasks**
+  - Game logic uses `std::async` to manage pause functionality.
+
+- **✅ Promise and future are used**
+  - `promise_pause` and `future_pause` enable async communication between threads.
+
+- **✅ Mutex or lock used**
+  - `pause_mutex` used to protect `is_paused` variable across threads.
+
+---
 
 
 ---

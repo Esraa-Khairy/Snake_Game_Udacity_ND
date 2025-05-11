@@ -9,6 +9,10 @@ Renderer::Renderer(const std::size_t screen_width,
       screen_height(screen_height),
       grid_width(grid_width),
       grid_height(grid_height) {
+    
+        // adding food bonus feature
+        block_width = static_cast<float>(screen_width) / grid_width;
+        block_height = static_cast<float>(screen_height) / grid_height;
   // Initialize SDL
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     std::cerr << "SDL could not initialize.\n";
@@ -38,7 +42,7 @@ Renderer::~Renderer() {
   SDL_Quit();
 }
 
-void Renderer::Render(Snake const snake, SDL_Point const &food, bool game_over = false) {
+void Renderer::Render(Snake const snake, SDL_Point const &food, bool game_over, SDL_Point const &bonus_food, bool is_bonus_food_active) {
   SDL_Rect block;
   block.w = screen_width / grid_width;
   block.h = screen_height / grid_height;
@@ -85,6 +89,19 @@ void Renderer::Render(Snake const snake, SDL_Point const &food, bool game_over =
     SDL_RenderFillRect(sdl_renderer, &overlay);
  
   }
+
+  // adding bonus food feature
+  if (is_bonus_food_active) {
+    SDL_Rect bonus_rect;
+    bonus_rect.w = block_width;
+    bonus_rect.h = block_height;
+    bonus_rect.x = bonus_food.x * block_width;
+    bonus_rect.y = bonus_food.y * block_height;
+  
+    SDL_SetRenderDrawColor(sdl_renderer, 255, 215, 0, 255);  // gold color
+    SDL_RenderFillRect(sdl_renderer, &bonus_rect);
+  }
+
 
   // Update Screen
   SDL_RenderPresent(sdl_renderer);

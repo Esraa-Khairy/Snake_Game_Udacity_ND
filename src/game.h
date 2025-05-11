@@ -7,6 +7,8 @@
 #include "renderer.h"
 #include "snake.h"
 #include <mutex>
+#include <thread>
+#include <condition_variable>
 #include <future>
 
 
@@ -22,6 +24,11 @@ class Game {
   bool isPaused();
   // adding high score feature
   int getHighScore () const;
+
+  //adding bonus food timer
+  void BonusFoodTimer();
+  void PlaceBonusFood();
+
 
 
 
@@ -49,6 +56,15 @@ class Game {
 
     // adding game over feature (red screen)
     bool game_over_shown{false};
+
+
+  //adding bonus food timer
+  std::thread bonusFoodThread;
+  std::condition_variable condition_var;
+  std::mutex bonus_mutex;
+  bool is_bonus_food_active = false;
+  bool bonus_food_already_appeared = false;
+  SDL_Point bonus_food;
 };
 
 #endif

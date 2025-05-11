@@ -34,7 +34,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     if(!(isPaused()))
     {
       Update();
-      renderer.Render(snake, food, game_over_shown);
+      renderer.Render(snake, food, game_over_shown,bonus_food, is_bonus_food_active);
 
     }
     else
@@ -47,7 +47,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     if(!snake.alive && !game_over_shown)
     {
       std::cout <<"Game over! final score: " << score << std::endl;
-      renderer.Render(snake,food,true);
+      renderer.Render(snake,food,true,bonus_food, is_bonus_food_active);
       game_over_shown = true;
       SDL_Delay(2000);
     }
@@ -98,19 +98,39 @@ void Game::Update() {
   int new_x = static_cast<int>(snake.head_x);
   int new_y = static_cast<int>(snake.head_y);
 
-  // Check if there's food over here
+  // Snake eats normal food
   if (food.x == new_x && food.y == new_y) {
     score++;
-
-    if(score > high_score)
-    {
+    if (score > high_score) {
       high_score = score;
       saveHighScore();
     }
     PlaceFood();
-    // Grow snake and increase speed.
     snake.GrowBody();
     snake.speed += 0.02;
+
+    // Start bonus food thread
+    if (!is_bonus_food_active && !bonus_food_already_appeared && score % 5 == 0) {
+      PlaceBonusFood();
+      is_bonus_food_active = true;
+      bonus_food_already_appeared = true;
+      bonusFoodThread = std::thread(&Game::BonusFoodTimer, this);
+      bonusFoodThread.detach();
+    }
+  }
+
+  // Snake eats bonus food
+  if (bonus_food.x == new_x && bonus_food.y == new_y && is_bonus_food_active) {
+    score += 3;  // bonus
+    if (score > high_score) {
+      high_score = score;
+      saveHighScore();
+    }
+    is_bonus_food_active = false;
+    bonus_food.x = -1;
+    bonus_food.y = -1;
+    bonus_food_already_appeared = false;
+    condition_var.notify_all();
   }
 }
 
@@ -166,4 +186,41 @@ void Game::saveHighScore()
 int Game::getHighScore() const
 {
   return high_score;
+}
+
+void Game::BonusFoodTimer() {
+  const int bonusSeconds = 10;
+  auto startTime = std::chrono::high_resolution_clock::now();
+  std::unique_lock<std::mutex> lock(bonus_mutex);
+
+  while (is_bonus_food_active) {
+    lock.unlock();
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    auto elapsedSeconds = std::chrono::duration_cast<std::chrono::seconds>(
+                            currentTime - startTime).count();
+
+    if (elapsedSeconds >= bonusSeconds) {
+      // Bonus food disappears
+      is_bonus_food_active = false;
+      bonus_food.x = -1;
+      bonus_food.y = -1;
+      break;
+    }
+
+    lock.lock();
+    condition_var.wait_for(lock, std::chrono::milliseconds(500));
+  }
+}
+
+void Game::PlaceBonusFood() {
+  int x, y;
+  while (true) {
+    x = random_w(engine);
+    y = random_h(engine);
+    if (!snake.SnakeCell(x, y)) {
+      bonus_food.x = x;
+      bonus_food.y = y;
+      return;
+    }
+  }
 }
