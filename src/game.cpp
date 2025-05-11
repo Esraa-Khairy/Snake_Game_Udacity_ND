@@ -2,6 +2,7 @@
 #include <iostream>
 #include "SDL.h"
 #include <thread>
+#include <fstream>
 
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
@@ -9,6 +10,7 @@ Game::Game(std::size_t grid_width, std::size_t grid_height)
       random_w(0, static_cast<int>(grid_width - 1)),
       random_h(0, static_cast<int>(grid_height - 1)) {
   PlaceFood();
+  loadHighScore();
 }
 
 void Game::Run(Controller const &controller, Renderer &renderer,
@@ -26,10 +28,10 @@ void Game::Run(Controller const &controller, Renderer &renderer,
   
     // Input, Update, Render - the main game loop.
     controller.HandleInput(running, snake, *this);
-    if(!is_paused)
+    if(!(isPaused()))
     {
       Update();
-      renderer.Render(snake, food);
+      renderer.Render(snake, food, game_over_shown);
 
     }
     else
@@ -38,6 +40,13 @@ void Game::Run(Controller const &controller, Renderer &renderer,
 
     }
     
+    if(!snake.alive && !game_over_shown)
+    {
+      std::cout <<"Game over! final score: " << score << std::endl;
+      renderer.Render(snake,food,true);
+      game_over_shown = true;
+      SDL_Delay(2000);
+    }
 
     frame_end = SDL_GetTicks();
 
@@ -48,7 +57,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
 
     // After every second, update the window title.
     if (frame_end - title_timestamp >= 1000) {
-      renderer.UpdateWindowTitle(score, frame_count);
+      renderer.UpdateWindowTitle(score, frame_count,high_score);
       frame_count = 0;
       title_timestamp = frame_end;
     }
@@ -88,6 +97,12 @@ void Game::Update() {
   // Check if there's food over here
   if (food.x == new_x && food.y == new_y) {
     score++;
+
+    if(score > high_score)
+    {
+      high_score = score;
+      saveHighScore();
+    }
     PlaceFood();
     // Grow snake and increase speed.
     snake.GrowBody();
@@ -100,6 +115,40 @@ int Game::GetSize() const { return snake.size; }
 
 void Game::togglePause()
 {
+  std::lock_guard<std::mutex> lock (pause_mutex);
   is_paused = !is_paused;
   std::cout << (is_paused? "Game paused \n" : "Game resumed \n");
+}
+
+bool Game::isPaused()
+{
+  std::lock_guard<std::mutex> lock(pause_mutex);
+  return is_paused;
+}
+
+void Game::loadHighScore()
+{
+  std::ifstream file ("high_score.txt");
+  if(file.is_open())
+  {
+    file >> high_score;
+
+  }
+  else
+  {
+    high_score = 0;
+  }
+}
+void Game::saveHighScore()
+{
+  std::ofstream file ("high_Score.txt");
+  if(file.is_open())
+  {
+    file << high_score;
+  }
+}
+
+int Game::getHighScore() const
+{
+  return high_score;
 }

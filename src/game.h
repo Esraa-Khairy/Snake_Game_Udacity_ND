@@ -6,6 +6,7 @@
 #include "controller.h"
 #include "renderer.h"
 #include "snake.h"
+#include <mutex>
 
 
 class Game {
@@ -17,12 +18,17 @@ class Game {
   int GetSize() const;
   // adding pause feature
   void togglePause();
+  bool isPaused();
+  // adding high score feature
+  int getHighScore () const;
+
+
 
  private:
   Snake snake;
-  Score score;
   SDL_Point food;
   bool is_paused {false};
+  std::mutex pause_mutex;
 
   std::random_device dev;
   std::mt19937 engine;
@@ -33,6 +39,13 @@ class Game {
 
   void PlaceFood();
   void Update();
+ // adding high score feature
+  int high_score{0};
+  void loadHighScore();
+  void saveHighScore();
+
+    // adding game over feature (red screen)
+    bool game_over_shown{false};
 };
 
 #endif
