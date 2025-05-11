@@ -1,46 +1,79 @@
-# CPPND: Capstone Snake Game Example
+# Snake Game - Final Project
 
-This is a starter repo for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213). The code for this repo was inspired by [this](https://codereview.stackexchange.com/questions/212296/snake-game-in-c-with-sdl) excellent StackOverflow post and set of responses.
+## Project Overview
 
-<img src="snake_game.gif"/>
+This is a classic Snake Game implemented in C++ using SDL2.  
+The player controls a snake that collects food and grows longer while avoiding collisions with the walls or itself.  
+If the snake collides, the game is over, and the player's score is displayed.
 
-The Capstone Project gives you a chance to integrate what you've learned throughout this program. This project will become an important part of your portfolio to share with current and future colleagues and employers.
+---
+### ✅ Feature Coverage Summary
 
-In this project, you can build your own C++ application or extend this Snake game, following the principles you have learned throughout this Nanodegree Program. This project will demonstrate that you can independently create applications using a wide range of C++ features.
+**Pause functionality**  
+### ✅ Feature Coverage Summary
 
-## Dependencies for Running Locally
-* cmake >= 3.7
-  * All OSes: [click here for installation instructions](https://cmake.org/install/)
-* make >= 4.1 (Linux, Mac), 3.81 (Windows)
-  * Linux: make is installed by default on most Linux distros
-  * Mac: [install Xcode command line tools to get make](https://developer.apple.com/xcode/features/)
-  * Windows: [Click here for installation instructions](http://gnuwin32.sourceforge.net/packages/make.htm)
-* SDL2 >= 2.0
-  * All installation instructions can be found [here](https://wiki.libsdl.org/Installation)
-  >Note that for Linux, an `apt` or `apt-get` installation is preferred to building from source. 
-* gcc/g++ >= 5.4
-  * Linux: gcc / g++ is installed by default on most Linux distros
-  * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
-  * Windows: recommend using [MinGW](http://www.mingw.org/)
+**Pause functionality**  
+Covered in:
+- `controller.cpp` – game pause is handled using `switch-case` statements that check when the 'P' key is pressed (Line 39).
+- `game.cpp` – game pause is managed using `if` statements that check the paused state and the 'P' key input in the game loop. The game updates and renders only when not paused. (`Lines 31`)
+- `game.h` – member variables like `is_paused`, `pause_mutex`, and functions like `togglePause()` and `isPaused()` are used to encapsulate pause behavior. (`Lines 19-31`)
 
-## Basic Build Instructions
+**High score tracking**  
+Covered in:
+- `game.cpp` – functions `loadHighScore()` and `saveHighScore()` handle reading/writing `high_score.txt` for persistent score tracking. (`Lines 100-105`)(`Lines 129-154`)
+- `game.h` – member variable `high_score` stores and updates the highest score internally. (`Line 42-48`)
 
-1. Clone this repo.
-2. Make a build directory in the top level directory: `mkdir build && cd build`
-3. Compile: `cmake .. && make`
-4. Run it: `./SnakeGame`.
-
-
-## CC Attribution-ShareAlike 4.0 International
+**Game over screen**  
+Addressed here:
+- `game.cpp`, `renderer.cpp`, `snake.cpp` – game over logic is encapsulated in the `Game` class and related modules.
+- `game.cpp` – `if` and `switch` statements manage the game over state and related events. (`Lines 43-49`)
+- `renderer.cpp` – game over screen is rendered with a semi-transparent red overlay when the game ends. (`Line 75-87`)
 
 
-Shield: [![CC BY-SA 4.0][cc-by-sa-shield]][cc-by-sa]
+---
+### Dependencies for Running Locally
 
-This work is licensed under a
-[Creative Commons Attribution-ShareAlike 4.0 International License][cc-by-sa].
+- **CMake** >= 3.7  
+  [Click here for installation instructions](https://cmake.org/install/)
 
-[![CC BY-SA 4.0][cc-by-sa-image]][cc-by-sa]
+- **Make** >= 4.1 (Linux, Mac), 3.81 (Windows)  
+  - **Linux**: `make` is installed by default on most Linux distros.
+  - **Mac**: Install Xcode command line tools to get `make`.
+  - **Windows**: [Click here for installation instructions](https://www.gnu.org/software/make/)
 
-[cc-by-sa]: http://creativecommons.org/licenses/by-sa/4.0/
-[cc-by-sa-image]: https://licensebuttons.net/l/by-sa/4.0/88x31.png
-[cc-by-sa-shield]: https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg
+- **SDL2** >= 2.0  
+  [All installation instructions can be found here](https://wiki.libsdl.org/Installation)
+
+  *Note: For Linux, an apt or apt-get installation is preferred over building from source.*
+
+- **gcc/g++** >= 5.4  
+  - **Linux**: `gcc/g++` is installed by default on most Linux distros.
+  - **Mac**: Same deal as `make` – install Xcode command line tools.
+  - **Windows**: Recommend using MinGW.
+
+---
+
+### Basic Build Instructions
+
+1. Clone this repo:
+
+    git clone <repo_url>
+    cd <repo_name>
+
+
+2. Make a build directory in the top-level directory:
+
+    mkdir build && cd build
+
+
+3. Compile the project:
+
+    cmake .. && make
+
+
+4. Run the game:
+
+    ./SnakeGame
+
+
+
