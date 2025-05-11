@@ -16,7 +16,7 @@ If the snake collides, the game is over, and the player's score is displayed.
 Covered in:
 - `controller.cpp` – game pause is handled using `switch-case` statements that check when the 'P' key is pressed (Line 39).
 - `game.cpp` – game pause is managed using `if` statements that check the paused state and the 'P' key input in the game loop. The game updates and renders only when not paused. (`Lines 31`)
-- `game.h` – member variables like `is_paused`, `pause_mutex`, and functions like `togglePause()` and `isPaused()` are used to encapsulate pause behavior. (`Lines 19-31`)
+- `game.h` – member variables like `is_paused`, `pause_mutex`, `promise_pause` , `future_pause`   and functions like `togglePause()` , `isPaused ()` and `std::move` are used in pause behavior. (`Lines 19-31`)
 
 **High score tracking**  
 Covered in:

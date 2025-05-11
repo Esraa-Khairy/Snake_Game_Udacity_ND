@@ -4,6 +4,9 @@
 #include <thread>
 #include <fstream>
 
+
+
+
 Game::Game(std::size_t grid_width, std::size_t grid_height)
     : snake(grid_width, grid_height),
       engine(dev()),
@@ -36,6 +39,7 @@ void Game::Run(Controller const &controller, Renderer &renderer,
     }
     else
     {
+      pause_future.wait();
       std::this_thread::sleep_for(std::chrono::microseconds(100));
 
     }
@@ -118,6 +122,17 @@ void Game::togglePause()
   std::lock_guard<std::mutex> lock (pause_mutex);
   is_paused = !is_paused;
   std::cout << (is_paused? "Game paused \n" : "Game resumed \n");
+
+  if(is_paused)
+  {
+    pause_promise.set_value();
+  }
+  else
+  {
+    std::promise<void> new_promise;
+    pause_promise = std::move(new_promise);
+    pause_future = pause_promise.get_future();
+  }
 }
 
 bool Game::isPaused()

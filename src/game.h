@@ -7,6 +7,7 @@
 #include "renderer.h"
 #include "snake.h"
 #include <mutex>
+#include <future>
 
 
 class Game {
@@ -29,6 +30,8 @@ class Game {
   SDL_Point food;
   bool is_paused {false};
   std::mutex pause_mutex;
+  std::promise<void> pause_promise;
+  std::future<void> pause_future = pause_promise.get_future();
 
   std::random_device dev;
   std::mt19937 engine;
